@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from model.crawl_article import CrawlArticle
 from model.crawl_article_body import CrawlArticleBody
+from model.crawl_category import CrawlCategory
+from model.crawl_article_category import CrawlArticleCategory
 from Controller import Controller
 import json, logging, time
 
@@ -33,6 +35,20 @@ class ArticleController(Controller):
                     else:
                         article = query[0]
                         session.query(CrawlArticle).filter(CrawlArticle.source_id == article.source_id).update(data)
+
+                    self.hook_data('read/%s' % article.id)
+
+                    # 触发生成静态文件
+                    category = session.query(CrawlCategory).filter(
+                        CrawlCategory.name == article.type
+                    ).one_or_none()
+
+                    if category is not None:
+                        self.hook_data('news/%s' % category.ename)
+
+                        # 添加文章分类
+                        articleCategory = CrawlArticleCategory(aid=article.id, cid=category.id);
+                        session.add(articleCategory)
 
                     if body is not None:
                         if query is None or query[1] is None:

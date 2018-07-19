@@ -3,7 +3,7 @@ from model.crawl_economic_calendar import CrawlEconomicCalendar
 from model.crawl_economic_event import CrawlEconomicEvent
 from model.crawl_economic_holiday import CrawlEconomicHoliday
 from Controller import Controller
-import json
+import json, datetime
 
 class Jin10calendarController(Controller):
     def __init__(self, topic="crawl_jin10_calendar"):
@@ -46,3 +46,6 @@ class Jin10calendarController(Controller):
                 session.query(model).filter(
                     model.id == query[0]
                 ).update(data)
+
+            if dtype == 'calendar':
+                self.hook_data('calendar/%s' % datetime.datetime.strptime(model_obj.publish_time, "%Y-%m-%d %H:%I:%S").strftime("%Y-%m-%d"))

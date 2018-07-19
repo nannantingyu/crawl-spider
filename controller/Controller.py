@@ -7,8 +7,7 @@ from contextlib import contextmanager
 from sqlalchemy.orm import sessionmaker
 from model.util import db_connect, create_news_table
 import settings
-import requests
-import threading
+from pykafka import KafkaClient
 
 @contextmanager
 def session_scope(session):
@@ -44,9 +43,18 @@ class Controller(object):
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.ERROR)
 
+        self.client = KafkaClient(hosts=self.server['host'])
+        self.producers = {}
+
         if topic:
             print self.server
+
             self.consumer = KafkaConsumer(topic, bootstrap_servers=self.server['host'], group_id='spider_consumer_client')
+
+    def __del__(self) :
+        if hasattr(self, "producers"):
+            for p in self.producers:
+                del p
 
     # 替换kafka中获取的data的键
     def key_replace(self, data):
@@ -64,3 +72,13 @@ class Controller(object):
                 del data[key]
 
         return data
+
+    def hook_data(self, url, topic_name='test1'):
+        if topic_name in self.producers:
+            p = self.producers[topic_name]
+        else:
+            topic = self.client.topics[topic_name]
+            p = topic.get_sync_producer()
+            self.producers[topic_name] = p
+
+        p.produce(bytes(url))

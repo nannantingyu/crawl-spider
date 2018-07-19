@@ -22,18 +22,9 @@ class Fx678jieduController(Controller):
                     if query is None:
                         session.add(jiedu)
                         session.flush()
-                        data['id'] = jiedu.id
-                        data['dtype'] = "insert"
-                        data['source_site'] = "fx678"
-                        self.hook_data(data, "jiedu")
                     else:
                         session.query(CrawlFx678EconomicJiedu).filter(
                             CrawlFx678EconomicJiedu.dataname_id == query[0]
                         ).update(data)
-
-                        data['id'] = jiedu.id
-                        data['dtype'] = "update"
-                        data['source_site'] = "fx678"
-                        self.hook_data(data, "jiedu")
                 except:
                     self.logger.error('Catch an exception.', exc_info=True)

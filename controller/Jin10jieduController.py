@@ -26,6 +26,8 @@ class Jin10jieduController(Controller):
                         session.query(CrawlEconomicJiedu).filter(
                             CrawlEconomicJiedu.dataname_id == query[0]
                         ).update(data)
+
+                    self.hook_data('explain/%s' % jiedu.dataname_id)
                 except:
                     session.rollback()
                     self.logger.error('Catch an exception.', exc_info=True)
