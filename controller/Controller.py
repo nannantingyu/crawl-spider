@@ -73,7 +73,7 @@ class Controller(object):
 
         return data
 
-    def hook_data(self, url, topic_name='test1'):
+    def hook_data(self, url, topic_name='jujin8_template'):
         if topic_name in self.producers:
             p = self.producers[topic_name]
         else:
