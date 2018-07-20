@@ -9,5 +9,6 @@ class CrawlArticleCategory(Base):
     """文章分类表"""
     __tablename__ = 'jujin8_article_category'
 
+    id = Column(Integer, primary_key=True)
     aid = Column(Integer)
     cid = Column(Integer)
