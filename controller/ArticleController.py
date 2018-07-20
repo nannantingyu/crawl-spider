@@ -36,7 +36,8 @@ class ArticleController(Controller):
                         article = query[0]
                         session.query(CrawlArticle).filter(CrawlArticle.source_id == article.source_id).update(data)
 
-                    self.hook_data('read/%s' % article.id)
+                    if body:
+                        self.hook_data('read/%s' % article.id)
 
                     # 触发生成静态文件
                     category = session.query(CrawlCategory).filter(
@@ -44,7 +45,8 @@ class ArticleController(Controller):
                     ).one_or_none()
 
                     if category is not None:
-                        self.hook_data('news/%s' % category.ename)
+                        if body:
+                            self.hook_data('news/%s' % category.ename)
 
                         # 添加文章分类
                         articleCategory = CrawlArticleCategory(aid=article.id, cid=category.id);
