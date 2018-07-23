@@ -49,7 +49,7 @@ class Controller(object):
         if topic:
             print self.server
 
-            self.consumer = KafkaConsumer(topic, bootstrap_servers=self.server['host'], group_id='spider_consumer_client')
+            self.consumer = KafkaConsumer(topic, bootstrap_servers=self.server['host'], group_id='cms_consumer_client')
 
     def __del__(self) :
         if hasattr(self, "producers"):
