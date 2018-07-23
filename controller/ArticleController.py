@@ -38,6 +38,7 @@ class ArticleController(Controller):
 
                     if body:
                         self.hook_data('read/%s' % article.id)
+                        self.logger.info('Notify generate article info http://www.jujin8.com/read/%s' % article.id)
 
                     # 触发生成静态文件
                     category = session.query(CrawlCategory).filter(
@@ -47,6 +48,7 @@ class ArticleController(Controller):
                     if category is not None:
                         if body:
                             self.hook_data('news/%s' % category.ename)
+                            self.logger.info('Notify generate article list http://www.jujin8.com/news/%s' % category.ename)
 
                         # 添加文章分类
                         articleCategory = CrawlArticleCategory(aid=article.id, cid=category.id);
