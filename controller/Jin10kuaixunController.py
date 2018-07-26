@@ -23,9 +23,8 @@ class Jin10kuaixunController(Controller):
                 data = self.delete_key(data)
                 data = self.key_replace(data)
 
-                print data
                 kuaixun = CrawlJin10Kuaixun(**data)
-                if '金十' in kuaixun.body or 'jin10' in kuaixun.body or 'jin10' in kuaixun.more_link:
+                if (kuaixun.body and ('金十' in kuaixun.body or 'jin10' in kuaixun.body)) or (kuaixun.more_link and 'jin10' in kuaixun.more_link):
                     continue
 
                 with self.session_scope(self.sess) as session:
