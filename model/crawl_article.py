@@ -2,7 +2,7 @@
 """
 定义数据库模型实体 
 """
-from sqlalchemy import Column, Integer, String, Text, DateTime, func
+from sqlalchemy import Column, Integer, String, Text, DateTime, func, SmallInteger
 from model.util import Base
 
 class CrawlArticle(Base):
@@ -17,6 +17,7 @@ class CrawlArticle(Base):
     recommend = Column(Integer, default=0)
     url = Column(String(256), default='')
     source_type = Column(String(32), default='crawl')
+    state = Column(SmallInteger, default=1)
     description = Column(String(512))
     image = Column(String(512))
     type = Column(String(32))

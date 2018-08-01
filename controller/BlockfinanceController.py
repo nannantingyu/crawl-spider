@@ -21,7 +21,7 @@ class BlockfinanceController(Controller):
                             coin_finance = CrawlBlockFinance(coin_id=coin, price=data[coin])
                             query = session.query(CrawlBlockFinance.id).filter(
                                 and_(
-                                    CrawlBlockFinance.coin_id == coin_finance.coin_id,
+                                    CrawlBlockFinance.coin_id == coin_finance.coin_id
                                 )
                             ).one_or_none()
 
@@ -31,7 +31,9 @@ class BlockfinanceController(Controller):
                             else:
                                 session.query(CrawlBlockFinance).filter(
                                     CrawlBlockFinance.id == query[0]
-                                ).update(coin)
+                                ).update({
+                                    'price': data[coin]
+                                })
                     except Exception, e:
                         session.rollback()
                         self.logger.error('Catch an exception.', exc_info=True)
