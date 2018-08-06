@@ -44,6 +44,7 @@ class ArticleController(Controller):
         return self.category_map
 
     def run(self):
+        category_map = self.get_category_map()
         for msg in self.consumer:
             try:
                 data = json.loads(msg.value.decode('utf-8'))
@@ -99,7 +100,7 @@ class ArticleController(Controller):
                         if body:
                             for ca in category:
                                 self.hook_data('news/%s' % ca.ename)
-                                self.logger.info('Notify generate article list http://www.jujin8.com/news/%s' % category.ename)
+                                self.logger.info('Notify generate article list http://www.jujin8.com/news/%s' % ca.ename)
 
                                 # 添加文章分类
                                 articleCategory = CrawlArticleCategory(aid=article.id, cid=ca.id);
