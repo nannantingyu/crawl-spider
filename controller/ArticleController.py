@@ -48,10 +48,13 @@ class ArticleController(Controller):
         for msg in self.consumer:
             try:
                 data = json.loads(msg.value.decode('utf-8'))
-                del data['dtype']
+                if 'dtype' in data:
+                    del data['dtype']
+
                 if "key" in data:
                     del data['key']
 
+                print data
                 body = None
                 if 'body' in data:
                     body = data['body']
