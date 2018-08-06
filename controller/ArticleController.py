@@ -24,7 +24,7 @@ class ArticleController(Controller):
     def get_category_map(self):
         time_now = time.time()
         # 设置过期时间
-        if self.category_map is None or self.category_start_time is None or time_now - self.category_start_time > 1800:
+        if self.category_start_time is None or time_now - self.category_start_time > 300:
             with self.session_scope(self.sess) as session:
                 try:
                     maps = session.query(CrawlCategoryMap).all()
