@@ -6,6 +6,7 @@ from model.crawl_article_category import CrawlArticleCategory
 from Controller import Controller
 from model.crawl_category_map import CrawlCategoryMap
 import json, logging, time, hashlib
+from sqlalchemy import and_, or_, func
 
 class ArticleController(Controller):
     def __init__(self, topic="crawl_article"):
@@ -106,7 +107,13 @@ class ArticleController(Controller):
                                 self.logger.info('Notify generate article list http://www.jujin8.com/news/%s' % ca.ename)
 
                                 # 添加文章分类
-                                articleCategory = CrawlArticleCategory(aid=article.id, cid=ca.id);
-                                session.add(articleCategory)
+                                query_type = session.query(CrawlArticleCategory).filter(and_(
+                                    CrawlArticleCategory.aid == article.id,
+                                    CrawlArticleCategory.cid == ca.id
+                                )).one_or_none()
+
+                                if query_type is None:
+                                    articleCategory = CrawlArticleCategory(aid=article.id, cid=ca.id);
+                                    session.add(articleCategory)
             except Exception as e:
                 self.logger.error('Catch an exception.', exc_info=True)
