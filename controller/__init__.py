@@ -20,5 +20,6 @@ __all__ = [
     'ForeignexchangespreadController',
     'ForeignexchangewithdrawController',
     'BlockinfoController',
-    'BlockfinanceController'
+    'BlockfinanceController',
+    'SinglecrawlarticleController'
 ]
