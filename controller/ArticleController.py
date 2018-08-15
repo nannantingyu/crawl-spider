@@ -45,7 +45,6 @@ class ArticleController(Controller):
         return self.category_map
 
     def run(self):
-        category_map = self.get_category_map()
         for msg in self.consumer:
             try:
                 data = json.loads(msg.value.decode('utf-8'))
@@ -55,7 +54,7 @@ class ArticleController(Controller):
                 if "key" in data:
                     del data['key']
 
-                print data
+                # print data
                 body = None
                 if 'body' in data:
                     body = data['body']
@@ -89,20 +88,28 @@ class ArticleController(Controller):
                     if category_map is not None:
                         pass
 
-                    map_key = self.md5("%s-%s" % (article.source_site, article.type))
-                    if map_key in self.category_map:
-                        category_ids = self.category_map[map_key]
-                        category = session.query(CrawlCategory).filter(
-                            CrawlCategory.id.in_(category_ids)
-                        ).all()
-                    else:
-                        category = session.query(CrawlCategory).filter(
-                            CrawlCategory.name == article.type
-                        ).all()
+                    all_categories = []
+                    for type in str(article.type).split(','):
+                        type = unicode(type, 'utf-8')
+                        print type
+                        map_key = self.md5("%s-%s" % (article.source_site, type))
+                        if map_key in self.category_map:
+                            category_ids = self.category_map[map_key]
+                            category = session.query(CrawlCategory).filter(
+                                CrawlCategory.id.in_(category_ids)
+                            ).all()
+                        else:
+                            category = session.query(CrawlCategory).filter(
+                                CrawlCategory.name == type
+                            ).all()
 
-                    if category is not None:
+                        if category:
+                            all_categories += category
+
+                    if len(all_categories) > 0:
                         if body:
-                            for ca in category:
+                            for ca in all_categories:
+                                print ca.ename
                                 self.hook_data('news/%s' % ca.ename)
                                 self.logger.info('Notify generate article list http://www.jujin8.com/news/%s' % ca.ename)
 
@@ -113,7 +120,7 @@ class ArticleController(Controller):
                                 )).one_or_none()
 
                                 if query_type is None:
-                                    articleCategory = CrawlArticleCategory(aid=article.id, cid=ca.id);
+                                    articleCategory = CrawlArticleCategory(aid=article.id, cid=ca.id)
                                     session.add(articleCategory)
             except Exception as e:
                 self.logger.error('Catch an exception.', exc_info=True)
