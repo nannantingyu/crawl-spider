@@ -21,5 +21,6 @@ __all__ = [
     'ForeignexchangewithdrawController',
     'BlockinfoController',
     'BlockfinanceController',
-    'SinglecrawlarticleController'
+    'SinglecrawlarticleController',
+    'FiledownController'
 ]
