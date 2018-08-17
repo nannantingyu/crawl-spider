@@ -5,6 +5,7 @@ from model.crawl_category import CrawlCategory
 from model.crawl_article_category import CrawlArticleCategory
 from Controller import Controller
 from model.crawl_category_map import CrawlCategoryMap
+from model.crawl_config import CrawlConfig
 import json, logging, time, hashlib
 from sqlalchemy import and_, or_, func
 
@@ -14,6 +15,9 @@ class ArticleController(Controller):
         self.category_map = {}
         self.category_start_time = None
 
+        self.source_site_state = {}
+        self.source_site_start_time = None
+
     def md5(self, str):
         try:
             str = str.encode('utf-8')
@@ -21,6 +25,27 @@ class ArticleController(Controller):
             self.logger.error('cannot encode '+ str)
 
         return hashlib.md5(str).hexdigest()
+
+    def get_source_site_state(self):
+        time_now = time.time()
+        # 设置过期时间
+        if self.source_site_start_time is None or time_now - self.source_site_start_time > 300:
+            with self.session_scope(self.sess) as session:
+                try:
+                    config = session.query(CrawlConfig).filter(CrawlConfig.key == 'article_source_site').one_or_none()
+
+                    if config:
+                        config_value = json.loads(config.value)
+                        for c in config_value:
+                            self.source_site_state[c['site']] = c['state']
+
+                    self.source_site_start_time = time.time()
+                except Exception,e:
+                    print e
+                    session.rollback()
+                    return None
+
+        return self.source_site_state
 
     def get_category_map(self):
         time_now = time.time()
@@ -73,6 +98,12 @@ class ArticleController(Controller):
                         article = query[0]
                         session.query(CrawlArticle).filter(CrawlArticle.source_id == article.source_id).update(data)
 
+                    # 如果设置来源网站不发布，则将新文章的状态设置为0
+                    source_site_state = self.get_source_site_state()
+                    if article.source_site in source_site_state:
+                        article.state = source_site_state[article.source_site]
+
+                    print article.state
                     if body is not None:
                         if query is None or query[1] is None:
                             session.add(CrawlArticleBody(aid=article.id, body=body))
@@ -91,7 +122,6 @@ class ArticleController(Controller):
                     all_categories = []
                     for type in str(article.type).split(','):
                         type = unicode(type, 'utf-8')
-                        print type
                         map_key = self.md5("%s-%s" % (article.source_site, type))
                         if map_key in self.category_map:
                             category_ids = self.category_map[map_key]

@@ -43,12 +43,11 @@ class Controller(object):
         self.logger.addHandler(handler)
         self.logger.setLevel(logging.ERROR)
 
+        print self.server
         self.client = KafkaClient(hosts=self.server['host'])
         self.producers = {}
 
         if topic:
-            print self.server
-
             self.consumer = KafkaConsumer(topic, bootstrap_servers=self.server['host'], group_id='cms_consumer_client')
 
     def __del__(self) :
