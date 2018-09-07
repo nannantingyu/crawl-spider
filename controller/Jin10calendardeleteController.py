@@ -15,7 +15,6 @@ class Jin10calendardeleteController(Controller):
             try:
                 data = json.loads(msg.value.decode('utf-8'))
                 dtype= data['dtype'] if "dtype" in data else "calendar"
-
                 del data['dtype']
                 if len(data['dataname_ids']) > 0:
                     if dtype == 'calendar':
@@ -31,7 +30,7 @@ class Jin10calendardeleteController(Controller):
         with self.session_scope(self.sess) as session:
             query = session.query(CrawlEconomicCalendar.id).filter(
                 and_(
-                    CrawlEconomicCalendar.publish_time.between(data['date'] + '00:00:00', data['date'] + '23:59:59'),
+                    CrawlEconomicCalendar.publish_time.between(data['date'] + ' 00:00:00', data['date'] + ' 23:59:59'),
                     ~CrawlEconomicCalendar.source_id.in_(data['dataname_ids'])
                 )
             ).all()
