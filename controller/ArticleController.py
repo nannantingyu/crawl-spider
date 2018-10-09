@@ -89,7 +89,10 @@ class ArticleController(Controller):
                 with self.session_scope(self.sess) as session:
                     query = session.query(CrawlArticle, CrawlArticleBody.body)\
                         .outerjoin(CrawlArticleBody, CrawlArticle.id == CrawlArticleBody.aid)\
-                        .filter(CrawlArticle.source_id == article.source_id).one_or_none()
+                        .filter(or_(
+                            CrawlArticle.source_id == article.source_id,
+                            CrawlArticle.title == article.title
+                        )).one_or_none()
 
                     if query is None:
                         session.add(article)
