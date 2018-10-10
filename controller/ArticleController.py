@@ -91,7 +91,7 @@ class ArticleController(Controller):
                         .outerjoin(CrawlArticleBody, CrawlArticle.id == CrawlArticleBody.aid)\
                         .filter(or_(
                             CrawlArticle.source_id == article.source_id,
-                            CrawlArticle.title == article.title
+                            and_(CrawlArticle.title == article.title, CrawlArticle.publish_time == article.publish_time)
                         )).one_or_none()
 
                     if query is None:
