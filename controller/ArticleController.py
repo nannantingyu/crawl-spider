@@ -79,6 +79,12 @@ class ArticleController(Controller):
                 if "key" in data:
                     del data['key']
 
+                if "created_at" in data:
+                    del data['created_at']
+                    
+                if "updated_at" in data:
+                    del data['updated_at']
+
                 # print data
                 body = None
                 if 'body' in data:
