@@ -81,7 +81,7 @@ class ArticleController(Controller):
 
                 if "created_at" in data:
                     del data['created_at']
-                    
+
                 if "updated_at" in data:
                     del data['updated_at']
 
@@ -105,6 +105,9 @@ class ArticleController(Controller):
                         session.flush()
                     else:
                         article = query[0]
+                        if "publish_time" in data:
+                            del data['publish_time']
+                            
                         session.query(CrawlArticle).filter(CrawlArticle.source_id == article.source_id).update(data)
 
                     # 如果设置来源网站不发布，则将新文章的状态设置为0
