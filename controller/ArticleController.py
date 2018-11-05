@@ -107,7 +107,7 @@ class ArticleController(Controller):
                         article = query[0]
                         if "publish_time" in data:
                             del data['publish_time']
-                            
+
                         session.query(CrawlArticle).filter(CrawlArticle.source_id == article.source_id).update(data)
 
                     # 如果设置来源网站不发布，则将新文章的状态设置为0
