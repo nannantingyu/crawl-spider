@@ -21,7 +21,7 @@ class NiuyanController(Controller):
                 # print code, price, now
                 if code in self.code_price:
                     last_update = self.code_price[code]['last_update']
-                    print code, last_update
+                    # print code, last_update
                     if now - last_update > 2:
                         coin = CrawlBlockFinance(coin_id=code, price=price)
                         with self.session_scope(self.sess) as session:
@@ -29,7 +29,7 @@ class NiuyanController(Controller):
                                 CrawlBlockFinance.coin_id == coin.coin_id
                             ).one_or_none()
 
-                            print "add coin %s " % code
+                            # print "add coin %s " % code
                             if query is None:
                                 session.add(coin)
                             else:
@@ -38,12 +38,11 @@ class NiuyanController(Controller):
                                 ).update({'price': price})
 
                 else:
-                    print 12345
                     self.code_price[code] = {
                         'last_update': time.time()
                     }
 
-                    print self.code_price
+                    # print self.code_price
 
                 self.r.publish("block_hq", msg.value.decode('utf-8'))
             except:

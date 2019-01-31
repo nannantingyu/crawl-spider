@@ -73,6 +73,9 @@ class ArticleController(Controller):
         for msg in self.consumer:
             try:
                 data = json.loads(msg.value.decode('utf-8'))
+                if 'body' not in data and ('title' not in data or not data['title']):
+                    continue
+
                 if 'dtype' in data:
                     del data['dtype']
 
